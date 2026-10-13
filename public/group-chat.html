@@ -8709,21 +8709,45 @@
     if (findRoom(channel)) { finalizeEntry(code); return; }
 
     setNewChatBusy(true);
-    pubnub.hereNow({ channels: [channel], includeState: true, includeUUIDs: true }, function (status, response) {
-      setNewChatBusy(false);
-      var takenBy = null;
-      if (!status.error && response && response.channels && response.channels[channel]) {
-        var occupants = response.channels[channel].occupants || [];
-        for (var i = 0; i < occupants.length; i++) {
-          var occ = occupants[i];
-          if (occ.uuid === clientId) continue;
-          var theirName = occ.state && occ.state.username;
-          if (theirName && theirName.toLowerCase() === username.toLowerCase()) { takenBy = theirName; break; }
+
+    function runNameConflictCheck() {
+      pubnub.hereNow({ channels: [channel], includeState: true, includeUUIDs: true }, function (status, response) {
+        setNewChatBusy(false);
+        var takenBy = null;
+        if (!status.error && response && response.channels && response.channels[channel]) {
+          var occupants = response.channels[channel].occupants || [];
+          for (var i = 0; i < occupants.length; i++) {
+            var occ = occupants[i];
+            if (occ.uuid === clientId) continue;
+            var theirName = occ.state && occ.state.username;
+            if (theirName && theirName.toLowerCase() === username.toLowerCase()) { takenBy = theirName; break; }
+          }
         }
-      }
-      if (takenBy) showConflict(code, takenBy);
-      else finalizeEntry(code);
-    });
+        if (takenBy) showConflict(code, takenBy);
+        else finalizeEntry(code);
+      });
+    }
+
+    // Join mode must never invent a room: a real room always has history (the creator's
+    // "joined the chat" system message is published at creation). If the channel has no
+    // stored messages, the code is wrong — show an error instead of creating an empty room.
+    if (mode === 'join' && typeof pubnub.fetchMessages === 'function') {
+      pubnub.fetchMessages({ channels: [channel], count: 1 }, function (status, response) {
+        var hasHistory = !status.error && response && response.channels &&
+          response.channels[channel] && response.channels[channel].length > 0;
+        if (!hasHistory) {
+          setNewChatBusy(false);
+          joinError.textContent = 'No room found with that code. Check the code and try again.';
+          joinError.classList.remove('hidden');
+          joinCodeInput.focus();
+          return;
+        }
+        runNameConflictCheck();
+      });
+      return;
+    }
+
+    runNameConflictCheck();
   }
 
   function finalizeEntry(code) {
