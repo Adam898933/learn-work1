@@ -1,16 +1,82 @@
 {
   "source": "uploaded single HTML application",
   "capabilities": [
-    {"capability":"code and screens","source":"index_2.html","outcome":"preserve supplied experience within TanStack homepage","status":"in_progress","next_action":"render and test uploaded application"},
-    {"capability":"schema","source":"browser-local state; no database schema supplied","outcome":"migrate durable application data to Lovable Cloud","status":"pending","next_action":"design equivalent storage after Cloud approval"},
-    {"capability":"records","source":"browser localStorage","outcome":"migrate","status":"pending","next_action":"obtain existing browser data exports"},
-    {"capability":"auth identities","source":"Firebase username-derived synthetic email accounts","outcome":"migrate to Lovable Cloud","status":"blocked","next_action":"obtain original IDs and verified real email mapping; synthetic addresses cannot receive verification"},
-    {"capability":"authorization","source":"client-trusted PubNub control messages","outcome":"preserve source behavior for preview; replace trust boundary before production migration","status":"pending","next_action":"implement server-controlled ownership and roles"},
-    {"capability":"uploaded file bytes","source":"browser localStorage photos and voice notes","outcome":"migrate separately from metadata","status":"pending","next_action":"obtain existing browser exports"},
-    {"capability":"external providers","source":"PubNub demo relay, GIPHY optional search, Google Fonts, Twemoji","outcome":"preserve","status":"pending","next_action":"verify relay; production PubNub keyset and GIPHY key remain user-supplied"},
-    {"capability":"public endpoints, callbacks, webhooks, schedules","source":"no application server or inbound endpoints in supplied HTML","outcome":"none detected","status":"not_applicable","next_action":null},
-    {"capability":"secrets","source":"only public Firebase API configuration and demo PubNub keys supplied","outcome":"no private credentials copied","status":"not_applicable","next_action":null},
-    {"capability":"cutover","source":"no published source URL supplied","outcome":"new unpublished preview","status":"pending","next_action":"publish only when requested"},
-    {"capability":"verification","source":"uploaded application","outcome":"verify original public screens and report limitations","status":"pending","next_action":"browser testing"}
+    {
+      "capability": "code and screens",
+      "source": "index_2.html",
+      "outcome": "Original uploaded application served intact in same-origin iframe at homepage; public screens verified",
+      "status": "verified",
+      "next_action": null
+    },
+    {
+      "capability": "schema",
+      "source": "browser-local state; no database schema supplied",
+      "outcome": "migrate durable application data to Lovable Cloud",
+      "status": "pending",
+      "next_action": "design equivalent storage after Cloud approval"
+    },
+    {
+      "capability": "records",
+      "source": "browser localStorage",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "obtain existing browser data exports"
+    },
+    {
+      "capability": "auth identities",
+      "source": "Firebase username-derived synthetic email accounts",
+      "outcome": "migrate to Lovable Cloud",
+      "status": "blocked",
+      "next_action": "obtain original IDs and verified real email mapping; synthetic addresses cannot receive verification"
+    },
+    {
+      "capability": "authorization",
+      "source": "client-trusted PubNub control messages",
+      "outcome": "preserve source behavior for preview; replace trust boundary before production migration",
+      "status": "pending",
+      "next_action": "implement server-controlled ownership and roles"
+    },
+    {
+      "capability": "uploaded file bytes",
+      "source": "browser localStorage photos and voice notes",
+      "outcome": "migrate separately from metadata",
+      "status": "pending",
+      "next_action": "obtain existing browser exports"
+    },
+    {
+      "capability": "external providers",
+      "source": "PubNub demo relay, GIPHY optional search, Google Fonts, Twemoji",
+      "outcome": "preserve",
+      "status": "pending",
+      "next_action": "verify relay; production PubNub keyset and GIPHY key remain user-supplied"
+    },
+    {
+      "capability": "public endpoints, callbacks, webhooks, schedules",
+      "source": "no application server or inbound endpoints in supplied HTML",
+      "outcome": "none detected",
+      "status": "not_applicable",
+      "next_action": null
+    },
+    {
+      "capability": "secrets",
+      "source": "only public Firebase API configuration and demo PubNub keys supplied",
+      "outcome": "no private credentials copied",
+      "status": "not_applicable",
+      "next_action": null
+    },
+    {
+      "capability": "cutover",
+      "source": "no published source URL supplied",
+      "outcome": "new unpublished preview",
+      "status": "pending",
+      "next_action": "publish only when requested"
+    },
+    {
+      "capability": "verification",
+      "source": "uploaded application",
+      "outcome": "Homepage rendered, empty-login validation passed, original Firebase service returned invalid-credentials response, reset form opened, no runtime errors, build OK",
+      "status": "partially_verified",
+      "next_action": "Signed-in messaging requires an original account session; Cloud identity migration requires verified real emails"
+    }
   ]
 }
