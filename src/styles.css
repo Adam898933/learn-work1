@@ -62,6 +62,7 @@
 }
 
 :root {
+  --chat-shell-background: oklch(0.185 0.018 240);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
@@ -141,4 +142,13 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+}
+
+/* The imported application owns its original theme within an isolated document. */
+.group-chat-website {
+  display: block;
+  width: 100%;
+  height: 100dvh;
+  border: 0;
+  background: var(--chat-shell-background);
 }
