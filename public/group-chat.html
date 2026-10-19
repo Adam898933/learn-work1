@@ -11255,6 +11255,7 @@
     job.then(function (r) {
       // Bring back everything saved to this account (profile, friends, rooms, old messages) before showing the app.
       saveSession({ uid: r.uid, name: r.name, refreshToken: r.refreshToken });
+      lsSet(LS_USERNAME, r.name);
       authSubmitBtn.textContent = 'Loading your stuff\u2026';
       var loggedIn = false;
       function proceed() { if (loggedIn) return; loggedIn = true; done(); finishLogin(r.name, r.uid, r.refreshToken, r.isNew); }
