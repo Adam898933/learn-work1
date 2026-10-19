@@ -14,13 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      account_data: {
+        Row: {
+          data: Json
+          firebase_uid: string
+          updated_at: string
+        }
+        Insert: {
+          data?: Json
+          firebase_uid: string
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          firebase_uid?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      merge_account_data: {
+        Args: { _remove: string[]; _replace: boolean; _set: Json; _uid: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
