@@ -11,16 +11,16 @@
     {
       "capability": "schema",
       "source": "browser-local state; no database schema supplied",
-      "outcome": "migrate durable application data to Lovable Cloud",
-      "status": "pending",
-      "next_action": "design equivalent storage after Cloud approval"
+      "outcome": "account_data table (one JSON record per Firebase account), server-only access",
+      "status": "verified",
+      "next_action": null
     },
     {
       "capability": "records",
       "source": "browser localStorage",
-      "outcome": "migrate",
-      "status": "pending",
-      "next_action": "obtain existing browser data exports"
+      "outcome": "Per-account app data (profile, friends, rooms, chat history, settings) now saved to Lovable Cloud keyed by verified Firebase uid and restored on login",
+      "status": "partially_verified",
+      "next_action": "Existing data uploads automatically the first time each user logs in on the device that has it; verify with a real account"
     },
     {
       "capability": "auth identities",
