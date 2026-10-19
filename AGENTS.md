@@ -10,4 +10,5 @@
 <!-- LOVABLE:END -->
 
 - Serve the supplied standalone Group Chat application in an isolated same-origin document embedded at the TanStack homepage, preserving its DOM-driven controls and bundled games without SSR execution.
+- Keep the educational entry screen in the TanStack homepage and mount the isolated app only after a reload navigation, so first visits do not execute the chat document.
 - Firebase remains the identity provider; the app's browser-local `groupchat_*` data is mirrored per account to Cloud through `/api/public/account-data`, which verifies the Firebase ID token and writes with the admin client (table has RLS and no client policies) — keeps accounts consistent across devices without exposing other users' data.

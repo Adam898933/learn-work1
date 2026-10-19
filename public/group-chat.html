@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="light dark" />
-<title>Group Chat</title>
+<title>Learning Hub</title>
 
 <script>
 
@@ -1682,43 +1682,42 @@
   .messages > :nth-last-child(-n+16) .bstyle-sleepycat .deco-on-top-right, .bubble-style-option .bstyle-sleepycat .deco-on-top-right { animation: decoBreathe 3s ease-in-out infinite; transform-origin: 50% 100%; }
   .messages > :nth-last-child(-n+16) .bstyle-sleepycat .deco-tail-right, .bubble-style-option .bstyle-sleepycat .deco-tail-right { animation: decoWag 2.4s ease-in-out infinite; transform-origin: 50% 0%; }
   @media (prefers-reduced-motion: reduce) { .bubble-deco, .bubble-deco svg, .bubble-deco .sh-fingers { animation: none !important; } }
-  /* ---- modern login screen (always dark, glass card over a glowing animated background) ---- */
-  #identityScreen.identity-screen { background: #0a0f1c; color: #eef2ff; padding: 28px 18px; overflow-x: hidden; }
-  #identityScreen.identity-screen::before, #identityScreen.identity-screen::after { content: ''; position: absolute; width: 420px; height: 420px; border-radius: 50%; filter: blur(70px); opacity: 0.55; pointer-events: none; z-index: 0; inset: auto; background: none; }
-  #identityScreen.identity-screen::before { top: -140px; left: -120px; background: radial-gradient(circle, #1fd38a, transparent 65%); animation: authBlobA 14s ease-in-out infinite alternate; }
-  #identityScreen.identity-screen::after { bottom: -160px; right: -140px; background: radial-gradient(circle, #7c5cff, transparent 65%); animation: authBlobB 17s ease-in-out infinite alternate; }
-  @keyframes authBlobA { to { transform: translate3d(90px, 120px, 0) scale(1.15); } }
-  @keyframes authBlobB { to { transform: translate3d(-110px, -90px, 0) scale(1.2); } }
-  #identityScreen .join-brand { position: relative; z-index: 1; margin-bottom: 18px; }
-  #identityScreen .join-brand h1 { background: linear-gradient(135deg, #ffffff, #a7f3d0 55%, #c4b5fd); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 30px; letter-spacing: -0.5px; }
-  #identityScreen .brand-tagline { color: rgba(238,242,255,0.65); }
-  .auth-card { position: relative; z-index: 1; width: 100%; max-width: 380px; margin: 0 auto; padding: 18px 18px 14px; border-radius: 22px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 20px 60px -20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
-  .auth-card .field-label { color: rgba(238,242,255,0.72); font-size: 12px; font-weight: 700; letter-spacing: 0.2px; margin-top: 12px; }
-  .auth-card input[type=text], .auth-card input[type=password], .auth-card input[type=date] { width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); color: #fff; border-radius: 12px; padding: 12px 14px; font-size: 15px; outline: none; transition: border-color 0.15s, box-shadow 0.15s, background 0.15s; color-scheme: dark; }
-  .auth-card input::placeholder { color: rgba(238,242,255,0.38); }
-  .auth-card input:focus { border-color: #25d366; background: rgba(255,255,255,0.1); box-shadow: 0 0 0 4px rgba(37,211,102,0.18); }
-  .auth-card .primary-btn { width: 100%; margin-top: 14px; padding: 13px; border: none; border-radius: 14px; font-size: 15.5px; font-weight: 800; color: #04140b; background: linear-gradient(135deg, #34e89e, #1fbf75); box-shadow: 0 10px 24px -10px rgba(37,211,102,0.8); cursor: pointer; transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s; }
-  .auth-card .primary-btn:hover { transform: translateY(-1px); box-shadow: 0 14px 28px -10px rgba(37,211,102,0.9); }
-  .auth-card .primary-btn:disabled { opacity: 0.7; transform: none; }
-  .auth-card .pw-toggle { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); color: #eef2ff; border-radius: 12px; }
-  .auth-card .join-footnote { color: rgba(238,242,255,0.5); }
-  .auth-link { display: block; margin: 10px auto 0; background: none; border: none; color: #8ef0c0; font-weight: 700; font-size: 13px; cursor: pointer; }
-  .auth-link:hover { text-decoration: underline; }
-  .auth-section { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: #a7f3d0; }
-  .auth-section.first { margin-top: 0; padding-top: 0; border-top: none; font-size: 14px; text-transform: none; letter-spacing: 0; color: #fff; }
-  .auth-mini { margin: 8px 0 0; font-size: 11.5px; color: rgba(238,242,255,0.5); }
-  .auth-card .auth-tabs { background: rgba(0,0,0,0.3); }
-  .auth-card .auth-tab { color: rgba(238,242,255,0.6); }
-  .auth-card .auth-tab.active { background: rgba(255,255,255,0.12); color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.35); }
-  .auth-card .auth-error { color: #ff8a9a; }
-  @media (prefers-reduced-motion: reduce) { #identityScreen.identity-screen::before, #identityScreen.identity-screen::after { animation: none; } }
-  .auth-tabs { display: flex; gap: 6px; background: var(--surface-alt); border-radius: 12px; padding: 4px; margin-bottom: 14px; }
-  .auth-tab { flex: 1; border: none; background: transparent; padding: 9px 6px; border-radius: 9px; font-weight: 700; font-size: 14px; color: var(--muted); cursor: pointer; }
-  .auth-tab.active { background: var(--card-bg); color: var(--text-strong); box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-  .pw-row { display: flex; gap: 6px; align-items: stretch; }
+  /* Learning Hub identity tokens live inside this isolated document. */
+  :root {
+    --auth-bg: oklch(0.97 0.006 170);
+    --auth-paper: oklch(1 0 0);
+    --auth-ink: oklch(0.27 0.024 165);
+    --auth-muted: oklch(0.51 0.018 165);
+    --auth-line: oklch(0.86 0.012 165);
+    --auth-primary: oklch(0.43 0.08 165);
+    --auth-primary-ink: oklch(1 0 0);
+    --auth-error: oklch(0.52 0.19 25);
+    --auth-ring: oklch(0.43 0.08 165 / 18%);
+  }
+  #identityScreen.identity-screen { background: var(--auth-bg); color: var(--auth-ink); padding: 36px 28px; overflow-x: hidden; }
+  #identityScreen.identity-screen::before, #identityScreen.identity-screen::after { display: none; }
+  #identityScreen .join-brand { position: relative; margin-bottom: 26px; }
+  .learning-mark { display: grid; place-items: center; margin: 0 auto 18px; width: 48px; height: 48px; border-radius: 8px; background: var(--auth-primary); color: var(--auth-primary-ink); font-family: var(--font-display); font-size: 19px; font-weight: 800; }
+  .auth-eyebrow { color: var(--auth-muted); font-size: 10px; font-weight: 600; margin: 0 0 10px; }
+  #identityScreen .join-brand h1 { color: var(--auth-ink); background: none; font-size: 32px; letter-spacing: 0; margin: 0 0 8px; }
+  #identityScreen .brand-tagline { color: var(--auth-muted); font-size: 14px; }
+  .auth-card { width: 100%; max-width: 360px; margin: 0 auto; position: relative; }
+  .auth-card .field-label { display: block; color: var(--auth-ink); font-size: 13px; font-weight: 600; margin: 18px 0 8px; }
+  .auth-card input[type=text], .auth-card input[type=password] { width: 100%; min-width: 0; background: var(--auth-paper); border: 1px solid var(--auth-line); color: var(--auth-ink); border-radius: 6px; padding: 13px 14px; font-family: var(--font-body); font-size: 15px; outline: none; color-scheme: light; }
+  .auth-card input::placeholder { color: var(--auth-muted); }
+  .auth-card input:focus { border-color: var(--auth-primary); box-shadow: 0 0 0 3px var(--auth-ring); }
+  .auth-card .primary-btn { width: 100%; margin-top: 12px; padding: 14px; border: none; border-radius: 6px; font-size: 15px; font-weight: 600; color: var(--auth-primary-ink); background: var(--auth-primary); cursor: pointer; }
+  .auth-card .primary-btn:hover { opacity: 0.9; }
+  .auth-card .primary-btn:disabled { opacity: 0.6; cursor: wait; }
+  .auth-card .join-footnote { color: var(--auth-muted); font-size: 12px; line-height: 1.6; margin-top: 18px; }
+  .auth-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--auth-line); margin-bottom: 22px; }
+  .auth-tab { flex: 1; border: none; border-bottom: 2px solid transparent; background: none; padding: 12px 6px; font-weight: 600; font-size: 14px; color: var(--auth-muted); cursor: pointer; }
+  .auth-tab.active { border-bottom-color: var(--auth-primary); color: var(--auth-primary); }
+  .pw-row { display: flex; gap: 8px; align-items: stretch; }
   .pw-row input { flex: 1; min-width: 0; }
-  .pw-toggle { border: 1px solid var(--field-border); background: var(--card-bg); color: var(--text-strong); border-radius: 10px; padding: 0 12px; font-weight: 600; cursor: pointer; }
-  .auth-error { color: var(--danger); font-size: 13px; font-weight: 600; min-height: 18px; margin: 8px 0 2px; }
+  .pw-toggle { border: 1px solid var(--auth-line); background: var(--auth-paper); color: var(--auth-muted); border-radius: 6px; padding: 0 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .auth-card .auth-error { color: var(--auth-error); font-size: 13px; font-weight: 500; min-height: 18px; margin: 12px 0 2px; }
+  @media (max-height: 650px) { #identityScreen.identity-screen { justify-content: flex-start; padding-top: 24px; } .learning-mark { margin-bottom: 10px; } }
   .msg-image { cursor: zoom-in; }
   .lightbox { position: fixed; inset: 0; z-index: 1000; background: rgba(4,6,12,0.94); display: flex; align-items: center; justify-content: center; overflow: hidden; touch-action: none; animation: lbIn 0.18s ease-out; }
   @keyframes lbIn { from { opacity: 0; } to { opacity: 1; } }
@@ -2354,28 +2353,10 @@
   <!-- ================= IDENTITY (first run only) ================= -->
   <section class="screen identity-screen" id="identityScreen">
     <div class="join-brand">
-      <div class="join-hero-illustration">
-        <svg viewBox="0 0 120 100" width="120" height="100" fill="none">
-          <path d="M14 20 h62 a10 10 0 0 1 10 10 v28 a10 10 0 0 1 -10 10 H46 l-16 14 v-14 H14 a10 10 0 0 1 -10 -10 V30 a10 10 0 0 1 10 -10 z" fill="url(#joinBubbleGrad1)"/>
-          <path d="M58 8 h48 a8 8 0 0 1 8 8 v22 a8 8 0 0 1 -8 8 h-6 v11 l-13 -11 H58 a8 8 0 0 1 -8 -8 V16 a8 8 0 0 1 8 -8 z" fill="var(--card-bg)" stroke="url(#joinBubbleGrad2)" stroke-width="2.5"/>
-          <circle cx="27" cy="44" r="3.4" fill="#ffffff" opacity="0.9"/>
-          <circle cx="40" cy="44" r="3.4" fill="#ffffff" opacity="0.9"/>
-          <circle cx="53" cy="44" r="3.4" fill="#ffffff" opacity="0.9"/>
-          <path d="M70 23 h28 M70 30 h20" stroke="url(#joinBubbleGrad2)" stroke-width="2.5" stroke-linecap="round" opacity="0.55"/>
-          <defs>
-            <linearGradient id="joinBubbleGrad1" x1="0" y1="0" x2="86" y2="68" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="var(--header-from)"/>
-              <stop offset="1" stop-color="var(--header-to)"/>
-            </linearGradient>
-            <linearGradient id="joinBubbleGrad2" x1="50" y1="8" x2="114" y2="38" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="var(--header-from)"/>
-              <stop offset="1" stop-color="var(--header-to)"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-      <h1>Group Chat</h1>
-      <p class="brand-tagline">Log in, or create an account to start chatting.</p>
+      <div class="learning-mark" aria-hidden="true">LH</div>
+      <p class="auth-eyebrow">YOUR SPACE TO CONNECT</p>
+      <h1>Learning Hub</h1>
+      <p class="brand-tagline">A little learning. A lot of connection.</p>
     </div>
     <div class="auth-card">
     <div id="authTabsWrap">
@@ -2389,36 +2370,9 @@
       <input type="text" id="usernameInput" maxlength="24" placeholder="Your username" autocomplete="username" autocapitalize="off" spellcheck="false" />
       <label class="field-label" for="passwordInput">Password</label>
       <div class="pw-row"><input type="password" id="passwordInput" maxlength="64" placeholder="Password" autocomplete="current-password" /><button type="button" class="pw-toggle" id="pwToggle">Show</button></div>
-      <div id="signupExtra" class="hidden">
-        <p class="auth-section">For resetting your password later</p>
-        <label class="field-label" for="birthdayInput">Birthday</label>
-        <input type="date" id="birthdayInput" />
-        <label class="field-label" for="answer1Input">What elementary school did you go to?</label>
-        <input type="text" id="answer1Input" maxlength="60" autocomplete="off" />
-        <label class="field-label" for="answer2Input">What was your first pet’s name (or favorite stuffed animal)?</label>
-        <input type="text" id="answer2Input" maxlength="60" autocomplete="off" />
-        <p class="auth-mini">Only used to unlock a password reset. They’re never stored or shown anywhere.</p>
-      </div>
       <p class="auth-error" id="authError"></p>
       <button type="submit" class="primary-btn" id="authSubmitBtn">Log in</button>
-      <button type="button" class="auth-link" id="forgotLink">Forgot password?</button>
       <p class="join-footnote" id="authFootnote"></p>
-    </form>
-    <form id="resetForm" class="hidden">
-      <p class="auth-section first">Reset your password</p>
-      <label class="field-label" for="resetUser">Username</label>
-      <input type="text" id="resetUser" maxlength="24" autocomplete="username" autocapitalize="off" spellcheck="false" />
-      <label class="field-label" for="resetBirthday">Birthday</label>
-      <input type="date" id="resetBirthday" />
-      <label class="field-label" for="resetA1">What elementary school did you go to?</label>
-      <input type="text" id="resetA1" maxlength="60" autocomplete="off" />
-      <label class="field-label" for="resetA2">What was your first pet’s name (or favorite stuffed animal)?</label>
-      <input type="text" id="resetA2" maxlength="60" autocomplete="off" />
-      <label class="field-label" for="resetNewPw">New password</label>
-      <input type="password" id="resetNewPw" maxlength="64" autocomplete="new-password" placeholder="6+ characters" />
-      <p class="auth-error" id="resetError"></p>
-      <button type="submit" class="primary-btn" id="resetSubmitBtn">Reset password</button>
-      <button type="button" class="auth-link" id="resetBackBtn">Back to log in</button>
     </form>
     </div>
   </section>
@@ -2431,7 +2385,7 @@
           <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span class="notif-badge hidden" id="notifBadge"></span>
         </button>
-        <div class="home-header-brand"><span class="home-brand-badge">GC</span><span>Group Chat</span></div>
+        <div class="home-header-brand"><span class="home-brand-badge">LH</span><span>Learning Hub</span></div>
         <button type="button" class="edit-name-btn" id="settingsBtn" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82A1.65 1.65 0 0 0 3 13.09H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       </div>
       <div class="home-header-profile">
@@ -2648,7 +2602,7 @@
         </div>
 
         <div class="profile-preview">
-          <div class="profile-preview-avatar" id="profilePreviewAvatar">GC</div>
+          <div class="profile-preview-avatar" id="profilePreviewAvatar">LH</div>
           <div class="profile-preview-name" id="profilePreviewName">@you</div>
         </div>
         <label class="field-label" for="settingsNameInput">Your name</label>
@@ -2794,7 +2748,7 @@
 
       <section class="settings-section">
         <h3 class="settings-heading"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> About</h3>
-        <p class="about-text">Group Chat runs entirely from this file — no server, no hosting. Messages relay through PubNub's free public demo sandbox, so skip anything sensitive. Chat history, photos, and these settings are saved only in this browser. When you reopen the app, it tries to catch you up on anything you missed — first through PubNub's own message history if it's available on this shared demo key, and as a backup, by asking any friend who's currently online to relay what they have.</p>
+        <p class="about-text">Learning Hub runs entirely from this file — no server, no hosting. Messages relay through PubNub's free public demo sandbox, so skip anything sensitive. Chat history, photos, and these settings are saved only in this browser. When you reopen the app, it tries to catch you up on anything you missed — first through PubNub's own message history if it's available on this shared demo key, and as a backup, by asking any friend who's currently online to relay what they have.</p>
         <button type="button" class="text-btn" id="whatsNewBtn" style="padding-left:0;">See what's new (<span id="whatsNewVersionLabel"></span>)</button>
       </section>
     </div>
@@ -7427,7 +7381,7 @@
   // favicon service — nothing is redrawn or copied into the app. If a network blocks that service,
   // a plain letter tile shows instead of a broken image.
   var DISGUISE_ICONS = [
-    { id: 'default', label: 'Group Chat', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="11" fill="#25d366"/><text x="24" y="32" font-family="Arial,sans-serif" font-size="20" font-weight="800" fill="#fff" text-anchor="middle">GC</text></svg>' },
+    { id: 'default', label: 'Learning Hub', svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="11" fill="#25d366"/><text x="24" y="32" font-family="Arial,sans-serif" font-size="20" font-weight="800" fill="#fff" text-anchor="middle">LH</text></svg>' },
     { id: 'google', label: 'Google', domain: 'www.google.com' },
     { id: 'clever', label: 'Clever', domain: 'clever.com' },
     { id: 'classroom', label: 'Google Classroom', domain: 'classroom.google.com' },
@@ -7473,7 +7427,7 @@
   function currentNormalFavicon() { return iconUrlFor(tabIconDef()); }
   function currentAlertFavicon() {
     if (tabIsDisguised()) return currentNormalFavicon(); // a disguise must never flash an alert
-    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="11" fill="#25d366"/><text x="24" y="32" font-family="Arial,sans-serif" font-size="20" font-weight="800" fill="#fff" text-anchor="middle">GC</text><circle cx="39" cy="9" r="8" fill="#ff4444" stroke="#fff" stroke-width="2"/></svg>';
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="11" fill="#25d366"/><text x="24" y="32" font-family="Arial,sans-serif" font-size="20" font-weight="800" fill="#fff" text-anchor="middle">LH</text><circle cx="39" cy="9" r="8" fill="#ff4444" stroke="#fff" stroke-width="2"/></svg>';
     return iconDataUrl(svg);
   }
 
@@ -11201,8 +11155,6 @@
   var authSubmitBtn = document.getElementById('authSubmitBtn'), authFootnote = document.getElementById('authFootnote');
   function setAuthMode(m) {
     authMode = m === 'signup' ? 'signup' : 'login';
-    document.getElementById('signupExtra').classList.toggle('hidden', authMode !== 'signup');
-    document.getElementById('forgotLink').classList.toggle('hidden', authMode !== 'login');
     authLoginTab.classList.toggle('active', authMode === 'login'); authSignupTab.classList.toggle('active', authMode === 'signup');
     authSubmitBtn.textContent = authMode === 'signup' ? 'Create account' : 'Log in';
     passwordInput.setAttribute('autocomplete', authMode === 'signup' ? 'new-password' : 'current-password');
@@ -11239,9 +11191,6 @@
     if (name.length < 2) { authError.textContent = 'Usernames need at least 2 characters.'; return; }
     if (usernameToEmail(name).split('@')[0].length > 64) { authError.textContent = 'That username is too long for its characters. Try a shorter one.'; return; }
     if (authMode === 'signup' && pw.length < 6) { authError.textContent = 'Passwords need at least 6 characters.'; return; }
-    var bday = document.getElementById('birthdayInput').value, a1 = document.getElementById('answer1Input').value, a2 = document.getElementById('answer2Input').value;
-    if (authMode === 'signup' && !validBirthday(bday)) { authError.textContent = 'Pick your birthday (it\u2019s used to reset your password).'; return; }
-    if (authMode === 'signup' && (normAnswer(a1).length < 1 || normAnswer(a2).length < 1)) { authError.textContent = 'Answer both questions (they\u2019re used to reset your password).'; return; }
     if (!pw) { authError.textContent = 'Type your password.'; return; }
     var label = authSubmitBtn.textContent; authSubmitBtn.disabled = true; authSubmitBtn.textContent = authMode === 'signup' ? 'Creating\u2026' : 'Logging in\u2026';
     function done(msg) { authSubmitBtn.disabled = false; authSubmitBtn.textContent = label; if (msg) authError.textContent = msg; }
@@ -11250,7 +11199,7 @@
       ? fbCall('signUp', { email: email, password: pw, returnSecureToken: true }).then(function (j) {
           return fbCall('update', { idToken: j.idToken, displayName: name, returnSecureToken: true }) // keeps the exact capitalization they typed
             .then(function (j2) { return { name: name, uid: j.localId, refreshToken: j2.refreshToken || j.refreshToken, isNew: true }; }, function () { return { name: name, uid: j.localId, refreshToken: j.refreshToken, isNew: true }; });
-        }).then(function (r) { return setupRecovery(name, bday, a1, a2, pw).then(function () { return r; }, function () { r.noRecovery = true; return r; }); })
+        })
       : fbCall('signInWithPassword', { email: email, password: pw, returnSecureToken: true }).then(function (j) { return { name: j.displayName || name, uid: j.localId, refreshToken: j.refreshToken, isNew: false }; });
     job.then(function (r) {
       // Bring back everything saved to this account (profile, friends, rooms, old messages) before showing the app.
@@ -11265,7 +11214,7 @@
         if (reload && !loggedIn) { loggedIn = true; lsSet(LS_HAD_ACCOUNT, '1'); lsSet(LS_USERNAME, r.name); try { window.location.reload(); } catch (e) {} return; }
         proceed();
       }, function () { clearTimeout(restoreTimer); proceed(); });
-      if (r.noRecovery) setTimeout(function () { addNotification('moderation', '\u26A0\uFE0F', 'Your account works, but password reset couldn\u2019t be set up for this username. Ask the owner to delete its old \u201cr\u2026\u201d entry in Firebase.', null); }, 600);
+
     }, function (err) { done(friendlyAuthError(err && err.code)); });
   });
   // An admin-approved rename also changes your login name, so you log in with the new one.
@@ -11292,82 +11241,6 @@
     var s = mySession(); if (!s || !username) return;
     cloudRestore(s.uid).then(function (reload) { if (reload) { lsSet(LS_USERNAME, s.name || username); try { window.location.reload(); } catch (e) {} } }, function () {});
   })();
-  // ---------- Password reset with birthday + two questions ----------
-  // There's no server code of our own, so the answers ARE the password to a hidden "recovery"
-  // account (r...@) in Firebase. Firebase checks them on its server and rate-limits wrong guesses.
-  // That recovery account holds the real password, locked (AES) with a key that only the same
-  // answers can produce. Birthday and answers are never stored anywhere, only used to derive keys.
-  var RECOVERY_QUESTIONS = ['What elementary school did you go to?', 'What was your first pet\u2019s name (or favorite stuffed animal)?'];
-  function normUser(n) { return String(n || '').trim().toLowerCase(); }
-  function normAnswer(s) { return String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim(); }
-  function recoveryEmail(name) { return usernameToEmail(name).replace(/^u/, 'r'); }
-  function recoverySecret(name, bday, a1, a2) { return normUser(name) + '|' + bday + '|' + normAnswer(a1) + '|' + normAnswer(a2); }
-  function deriveBits(secret, purpose) {
-    var enc = new TextEncoder();
-    return crypto.subtle.importKey('raw', enc.encode(secret), 'PBKDF2', false, ['deriveBits']).then(function (k) {
-      return crypto.subtle.deriveBits({ name: 'PBKDF2', salt: enc.encode('gc-' + purpose), iterations: 150000, hash: 'SHA-256' }, k, 256);
-    });
-  }
-  function b64(bytes) { var s = ''; bytes = new Uint8Array(bytes); for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]); return btoa(s); }
-  function unb64(str) { var s = atob(str), o = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) o[i] = s.charCodeAt(i); return o; }
-  function recoveryPassword(secret) { return deriveBits(secret, 'recovery-login').then(b64); }
-  function recoveryKey(secret) { return deriveBits(secret, 'recovery-key').then(function (bits) { return crypto.subtle.importKey('raw', bits, 'AES-GCM', false, ['encrypt', 'decrypt']); }); }
-  function sealPassword(secret, pw) {
-    var iv = crypto.getRandomValues(new Uint8Array(12));
-    return recoveryKey(secret).then(function (key) { return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(pw)); })
-      .then(function (ct) { var all = new Uint8Array(12 + ct.byteLength); all.set(iv, 0); all.set(new Uint8Array(ct), 12); return b64(all); });
-  }
-  function openPassword(secret, sealed) {
-    var all = unb64(sealed);
-    return recoveryKey(secret).then(function (key) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: all.slice(0, 12) }, key, all.slice(12)); })
-      .then(function (pt) { return new TextDecoder().decode(pt); });
-  }
-  function setupRecovery(name, bday, a1, a2, pw) {
-    var sec = recoverySecret(name, bday, a1, a2);
-    return Promise.all([recoveryPassword(sec), sealPassword(sec, pw)]).then(function (v) {
-      return fbCall('signUp', { email: recoveryEmail(name), password: v[0], returnSecureToken: true })
-        .then(function (j) { return fbCall('update', { idToken: j.idToken, displayName: v[1], returnSecureToken: false }); });
-    });
-  }
-  function validBirthday(v) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); if (!m) return false; var y = +m[1]; return y >= 1900 && y <= new Date().getFullYear(); }
-  var resetForm = document.getElementById('resetForm'), resetError = document.getElementById('resetError'), resetSubmitBtn = document.getElementById('resetSubmitBtn');
-  function showReset(on) {
-    resetForm.classList.toggle('hidden', !on); identityForm.classList.toggle('hidden', on);
-    document.getElementById('authTabsWrap').classList.toggle('hidden', on);
-    resetError.textContent = '';
-    if (on) { document.getElementById('resetUser').value = usernameInput.value; document.getElementById('resetUser').focus(); }
-  }
-  document.getElementById('forgotLink').addEventListener('click', function () { showReset(true); });
-  document.getElementById('resetBackBtn').addEventListener('click', function () { showReset(false); setAuthMode('login'); });
-  resetForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (resetSubmitBtn.disabled) return;
-    var name = document.getElementById('resetUser').value.trim(), bday = document.getElementById('resetBirthday').value;
-    var a1 = document.getElementById('resetA1').value, a2 = document.getElementById('resetA2').value, npw = document.getElementById('resetNewPw').value;
-    resetError.textContent = '';
-    if (name.length < 2) { resetError.textContent = 'Type your username.'; return; }
-    if (!validBirthday(bday)) { resetError.textContent = 'Pick your birthday.'; return; }
-    if (normAnswer(a1).length < 1 || normAnswer(a2).length < 1) { resetError.textContent = 'Answer both questions.'; return; }
-    if (npw.length < 6) { resetError.textContent = 'New passwords need at least 6 characters.'; return; }
-    resetSubmitBtn.disabled = true; var label = resetSubmitBtn.textContent; resetSubmitBtn.textContent = 'Checking\u2026';
-    function done(msg) { resetSubmitBtn.disabled = false; resetSubmitBtn.textContent = label; if (msg) resetError.textContent = msg; }
-    var sec = recoverySecret(name, bday, a1, a2), rec = null, main = null;
-    recoveryPassword(sec).then(function (rpw) {
-      return fbCall('signInWithPassword', { email: recoveryEmail(name), password: rpw, returnSecureToken: true });
-    }).then(function (j) { rec = j; return fbCall('lookup', { idToken: j.idToken }); }, function (err) {
-      var c = String(err && err.code || ''); throw { msg: /INVALID_LOGIN_CREDENTIALS|INVALID_PASSWORD|EMAIL_NOT_FOUND/.test(c) ? 'That username, birthday, and answers don\u2019t match.' : friendlyAuthError(c) };
-    }).then(function (l) {
-      var sealed = l && l.users && l.users[0] && l.users[0].displayName; if (!sealed) throw { msg: 'Password reset isn\u2019t set up for this account. Ask the owner.' };
-      return openPassword(sec, sealed);
-    }).then(function (oldPw) {
-      return fbCall('signInWithPassword', { email: usernameToEmail(name), password: oldPw, returnSecureToken: true });
-    }).then(function (m) { main = m; return fbCall('update', { idToken: m.idToken, password: npw, returnSecureToken: true }); })
-      .then(function (m2) {
-        main.refreshToken = m2.refreshToken || main.refreshToken;
-        return sealPassword(sec, npw).then(function (s2) { return fbCall('update', { idToken: rec.idToken, displayName: s2, returnSecureToken: false }); });
-      }).then(function () { done(); showReset(false); finishLogin(main.displayName || name, main.localId, main.refreshToken, false); },
-        function (err) { done(err && err.msg ? err.msg : friendlyAuthError(err && err.code)); });
-  });
   document.getElementById('logoutBtn').addEventListener('click', function () { forceLogout(''); });
   (function () { var n = lsGet(LS_AUTH_NOTICE); if (n) { lsSet(LS_AUTH_NOTICE, ''); setTimeout(function () { authError.textContent = n; }, 0); } })();
   setAuthMode(lsGet(LS_HAD_ACCOUNT) ? 'login' : 'signup');
