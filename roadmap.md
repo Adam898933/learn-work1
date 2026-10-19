@@ -1,7 +1,7 @@
-# Group Chat website
-- [ ] Rename the site Learning Hub and improve login/create account appearance.
-- [ ] Remove recovery questions and password reset without breaking existing logins.
-- [ ] Show an educational opening screen requiring a page reload to enter.
+# Learning Hub website
+- [x] Rename the site Learning Hub and improve login/create account appearance.
+- [x] Remove recovery questions and password reset while preserving existing login and cloud-save logic.
+- [x] Show and verify an educational opening screen requiring a page reload to enter.
 - [x] Display and verify the supplied application at the homepage.
 - [x] Verify public login validation, original login service response, and password-reset screen.
 - [x] Save each account's profile, friends, rooms and messages to the cloud and restore them on login.
