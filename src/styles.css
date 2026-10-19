@@ -62,6 +62,15 @@
 }
 
 :root {
+  --learning-paper: oklch(0.98 0.003 170);
+  --learning-ink: oklch(0.27 0.024 165);
+  --learning-muted: oklch(0.51 0.018 165);
+  --learning-green: oklch(0.43 0.08 165);
+  --learning-on-green: oklch(1 0 0);
+  --learning-line: oklch(0.86 0.012 165);
+  --learning-veil: oklch(0.98 0.003 170 / 48%);
+  --learning-image-veil: oklch(0.98 0.003 170 / 90%);
+  --learning-shadow: 0 24px 80px oklch(0.27 0.024 165 / 16%);
   --chat-shell-background: oklch(0.185 0.018 240);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -151,4 +160,40 @@
   height: 100dvh;
   border: 0;
   background: var(--chat-shell-background);
+}
+
+.learning-cover { min-height: 100dvh; background: var(--learning-paper); color: var(--learning-ink); font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+.learning-header { height: 92px; padding: 0 6%; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--learning-line); }
+.learning-wordmark { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 20px; }
+.learning-logo { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 6px; font-size: 16px; color: var(--learning-on-green); background: var(--learning-green); }
+.learning-header-note { color: var(--learning-muted); font-size: 13px; }
+.learning-hero { position: relative; height: min(570px, 65dvh); min-height: 350px; overflow: hidden; }
+.learning-hero > img { width: 100%; height: 100%; object-fit: cover; }
+.learning-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--learning-image-veil), transparent 75%); }
+.learning-hero-copy { position: absolute; z-index: 1; top: 18%; left: 6%; }
+.learning-eyebrow { font-size: 10px; font-weight: 600; color: var(--learning-green); margin: 0 0 18px; }
+.learning-hero h1 { font-family: 'Manrope', system-ui, sans-serif; font-size: 56px; line-height: 1.1; font-weight: 800; margin: 0 0 22px; letter-spacing: 0; }
+.learning-hero-copy > p:last-child { font-size: 21px; line-height: 1.5; }
+.learning-subjects { padding: 36px 6%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
+.learning-subjects article { display: flex; gap: 16px; border-top: 1px solid var(--learning-line); padding-top: 24px; }
+.learning-subjects svg { width: 20px; flex-shrink: 0; color: var(--learning-green); }
+.learning-subjects article > svg:last-child { margin-left: auto; width: 16px; }
+.learning-subjects p { font-size: 9px; color: var(--learning-muted); margin: 0 0 10px; }
+.learning-subjects h2 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+.learning-subjects span { color: var(--learning-muted); font-size: 12px; }
+.learning-entry-shade { position: fixed; inset: 0; z-index: 5; background: var(--learning-veil); backdrop-filter: blur(2px); }
+.learning-entry-prompt { position: fixed; z-index: 6; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(420px, calc(100% - 40px)); padding: 38px 32px; background: var(--learning-paper); border: 1px solid var(--learning-line); border-radius: 8px; box-shadow: var(--learning-shadow); text-align: center; }
+.entry-symbol { display: grid; place-items: center; margin: 0 auto 24px; width: 48px; height: 48px; border: 1px solid var(--learning-line); border-radius: 50%; color: var(--learning-green); }
+.entry-symbol svg { width: 21px; }
+.learning-entry-prompt h2 { font-family: 'Manrope', system-ui, sans-serif; font-size: 28px; font-weight: 700; line-height: 1.3; margin: 0 0 28px; }
+.learning-reload { background: var(--learning-green); color: var(--learning-on-green); width: 100%; height: 46px; box-shadow: none; }
+.learning-reload:hover { background: var(--learning-green); opacity: 0.9; }
+@media (max-width: 640px) {
+  .learning-header { height: 76px; }
+  .learning-header-note { display: none; }
+  .learning-hero h1 { font-size: 38px; }
+  .learning-hero-copy > p:last-child { font-size: 17px; }
+  .learning-subjects { grid-template-columns: 1fr; gap: 20px; padding-top: 24px; }
+  .learning-entry-prompt { padding: 30px 24px; }
+  .learning-entry-prompt h2 { font-size: 25px; }
 }
