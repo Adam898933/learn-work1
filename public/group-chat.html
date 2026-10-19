@@ -3381,9 +3381,20 @@
   var MENTION_REGEX = /@[A-Za-z0-9_]{2,24}/g;
 
   // ---------- Safe localStorage helpers ----------
+  // Every change is also queued to be saved to the signed-in account (see "Saved to your account").
+  var LS_CLOUD_UID = 'groupchat_cloud_uid', LS_CLOUD_AT = 'groupchat_cloud_at', LS_CLOUD_PENDING = 'groupchat_cloud_pending';
+  var CLOUD_SKIP = { groupchat_session: 1, groupchat_auth_notice: 1, groupchat_had_account: 1, groupchat_clientid: 1, groupchat_dark_default_v1: 1, groupchat_cloud_uid: 1, groupchat_cloud_at: 1, groupchat_cloud_pending: 1 };
+  var cloudReady = false, cloudDirty = {}, cloudTimer = null;
+  function cloudKeyOk(k) { return typeof k === 'string' && k.indexOf('groupchat_') === 0 && !CLOUD_SKIP[k]; }
+  function cloudMarkDirty(key) {
+    if (!cloudKeyOk(key)) return;
+    cloudDirty[key] = true;
+    try { localStorage.setItem(LS_CLOUD_PENDING, '1'); } catch (e) {}
+    if (cloudReady) cloudSchedulePush(2500);
+  }
   function lsGet(key) { try { return localStorage.getItem(key); } catch (e) { return null; } }
-  function lsSet(key, val) { try { localStorage.setItem(key, val); } catch (e) { /* storage unavailable or full */ } }
-  function lsRemove(key) { try { localStorage.removeItem(key); } catch (e) { /* storage unavailable */ } }
+  function lsSet(key, val) { try { localStorage.setItem(key, val); } catch (e) { /* storage unavailable or full */ } cloudMarkDirty(key); }
+  function lsRemove(key) { try { localStorage.removeItem(key); } catch (e) { /* storage unavailable */ } cloudMarkDirty(key); }
 
   // ---------- DOM: identity screen ----------
   var identityScreen = document.getElementById('identityScreen');
@@ -4019,7 +4030,7 @@
   function isLockedDown() { return lockdownTargetsMe() && !canApproveNames(); }
   function wipeChatsForLockdown() {
     var chans = rooms.map(function (r) { return r.channel; });
-    chans.forEach(function (ch) { try { window.localStorage.removeItem(HISTORY_PREFIX + ch); } catch (e) {} });
+    chans.forEach(function (ch) { try { window.localStorage.removeItem(HISTORY_PREFIX + ch); } catch (e) {} cloudMarkDirty(HISTORY_PREFIX + ch); });
     if (pubnub && chans.length) { try { pubnub.unsubscribe({ channels: chans }); } catch (e) {} }
     rooms = []; saveRooms(); currentChannel = null;
     if (messagesEl) messagesEl.innerHTML = '';
@@ -11087,9 +11098,104 @@
     return 'Couldn\u2019t reach the login server. Check your internet and try again.';
   }
   function forceLogout(notice) {
-    lsSet(LS_SESSION, ''); lsSet(LS_USERNAME, ''); if (notice) lsSet(LS_AUTH_NOTICE, notice);
-    try { window.location.reload(); } catch (e) {}
+    function finish() {
+      cloudReady = false; // signing out must never be saved to the account
+      lsSet(LS_SESSION, ''); lsSet(LS_USERNAME, ''); if (notice) lsSet(LS_AUTH_NOTICE, notice);
+      try { window.location.reload(); } catch (e) {}
+    }
+    if (notice) finish(); else cloudFlush(4000).then(finish, finish); // normal log out: save last changes first
   }
+  // ---------- Saved to your account (cloud backup) ----------
+  // Everything the app keeps on this device (profile picture, bio, friends, rooms, old messages,
+  // settings) is also saved to your account, so logging in on any device brings it all back.
+  var CLOUD_URL = '/api/public/account-data';
+  var CLOUD_CHUNK = 3 * 1024 * 1024;
+  var cloudPushing = false, cloudToken = null, cloudTokenExp = 0, cloudRetry = 0;
+  function cloudRawSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function cloudRawRemove(k) { try { localStorage.removeItem(k); } catch (e) {} }
+  function cloudAllKeys() { var out = []; try { for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (cloudKeyOk(k)) out.push(k); } } catch (e) {} return out; }
+  function cloudIdToken() {
+    var s = mySession(); if (!s) return Promise.reject(new Error('signed out'));
+    if (cloudToken && Date.now() < cloudTokenExp) return Promise.resolve(cloudToken);
+    return fbRefresh(s.refreshToken).then(function (t) {
+      cloudToken = t.id_token; cloudTokenExp = Date.now() + Math.max(60, (Number(t.expires_in) || 3600) - 300) * 1000;
+      if (t.refresh_token && t.refresh_token !== s.refreshToken) saveSession({ uid: s.uid, name: s.name, refreshToken: t.refresh_token });
+      return cloudToken;
+    });
+  }
+  function cloudRequest(method, body, keepalive) {
+    return cloudIdToken().then(function (token) {
+      var opts = { method: method, headers: { 'Authorization': 'Bearer ' + token }, cache: 'no-store' };
+      if (body !== undefined) { opts.headers['Content-Type'] = 'application/json'; opts.body = body; if (keepalive && body.length < 60000) opts.keepalive = true; }
+      return fetch(CLOUD_URL, opts).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error((j && j.error) || ('HTTP ' + r.status)); return j; }); });
+    });
+  }
+  function cloudTime(v) { var n = Date.parse(v || ''); return isNaN(n) ? 0 : n; }
+  function cloudSchedulePush(ms) { if (cloudTimer) clearTimeout(cloudTimer); cloudTimer = setTimeout(function () { cloudTimer = null; cloudPush(); }, ms); }
+  function cloudPush(keepalive) {
+    if (!cloudReady || !mySession()) return Promise.resolve();
+    if (cloudPushing) { cloudSchedulePush(1500); return Promise.resolve(); }
+    var keys = Object.keys(cloudDirty); if (!keys.length) return Promise.resolve();
+    cloudDirty = {};
+    var batches = [], cur = { set: {}, remove: [] }, size = 0;
+    keys.forEach(function (k) {
+      var v = lsGet(k);
+      if (v === null) cur.remove.push(k); else { if (size + v.length > CLOUD_CHUNK && size > 0) { batches.push(cur); cur = { set: {}, remove: [] }; size = 0; } cur.set[k] = v; size += v.length + k.length; }
+    });
+    batches.push(cur);
+    cloudPushing = true;
+    var chain = Promise.resolve();
+    batches.forEach(function (b) { chain = chain.then(function () { return cloudRequest('PUT', JSON.stringify(b), keepalive).then(function (j) { if (j && j.updatedAt) cloudRawSet(LS_CLOUD_AT, String(j.updatedAt)); }); }); });
+    return chain.then(function () {
+      cloudPushing = false; cloudRetry = 0;
+      if (Object.keys(cloudDirty).length) cloudSchedulePush(1500); else cloudRawRemove(LS_CLOUD_PENDING);
+    }, function () {
+      cloudPushing = false;
+      keys.forEach(function (k) { cloudDirty[k] = true; }); // try again shortly
+      cloudRetry = Math.min(cloudRetry + 1, 6); cloudSchedulePush(5000 * cloudRetry);
+    });
+  }
+  function cloudFlush(timeoutMs) {
+    if (cloudTimer) { clearTimeout(cloudTimer); cloudTimer = null; }
+    return Promise.race([cloudPush(), new Promise(function (res) { setTimeout(res, timeoutMs); })]);
+  }
+  function cloudPushEverything() { cloudAllKeys().forEach(function (k) { cloudDirty[k] = true; }); return cloudPush(); }
+  // Loads the account's saved copy. Resolves true when this device was updated and the page should reload.
+  function cloudRestore(uid) {
+    return cloudRequest('GET').then(function (r) {
+      var localUid = lsGet(LS_CLOUD_UID);
+      var saved = r && r.data && typeof r.data === 'object' ? r.data : null;
+      var hasSaved = !!saved && Object.keys(saved).length > 0;
+      if (hasSaved) {
+        var upToDate = localUid === uid && cloudTime(lsGet(LS_CLOUD_AT)) >= cloudTime(r.updatedAt);
+        if (upToDate) {
+          cloudReady = true;
+          if (lsGet(LS_CLOUD_PENDING)) cloudPushEverything(); else cloudPush();
+          return false;
+        }
+        cloudAllKeys().forEach(cloudRawRemove); // this device's copy is older, or belongs to someone else
+        Object.keys(saved).forEach(function (k) { if (cloudKeyOk(k) && typeof saved[k] === 'string') cloudRawSet(k, saved[k]); });
+        cloudRawSet(LS_CLOUD_UID, uid); cloudRawSet(LS_CLOUD_AT, String(r.updatedAt || '')); cloudRawRemove(LS_CLOUD_PENDING);
+        cloudDirty = {};
+        return true;
+      }
+      if (localUid && localUid !== uid) { // nothing saved yet, and what's here belongs to another account
+        cloudAllKeys().forEach(cloudRawRemove);
+        cloudRawSet(LS_CLOUD_UID, uid); cloudRawRemove(LS_CLOUD_AT); cloudRawRemove(LS_CLOUD_PENDING);
+        cloudDirty = {};
+        return true;
+      }
+      cloudRawSet(LS_CLOUD_UID, uid); // first time: save what this device already has to the account
+      cloudReady = true;
+      cloudPushEverything();
+      return false;
+    }, function (err) {
+      if (lsGet(LS_CLOUD_UID) === uid) { cloudReady = true; cloudSchedulePush(8000); } // offline: keep saving later
+      throw err;
+    });
+  }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden' && cloudReady) { if (cloudTimer) { clearTimeout(cloudTimer); cloudTimer = null; } cloudPush(true); } });
+  window.addEventListener('pagehide', function () { if (cloudReady) cloudPush(true); });
   var authLoginTab = document.getElementById('authLoginTab'), authSignupTab = document.getElementById('authSignupTab');
   var passwordInput = document.getElementById('passwordInput'), authError = document.getElementById('authError');
   var authSubmitBtn = document.getElementById('authSubmitBtn'), authFootnote = document.getElementById('authFootnote');
@@ -11147,7 +11253,17 @@
         }).then(function (r) { return setupRecovery(name, bday, a1, a2, pw).then(function () { return r; }, function () { r.noRecovery = true; return r; }); })
       : fbCall('signInWithPassword', { email: email, password: pw, returnSecureToken: true }).then(function (j) { return { name: j.displayName || name, uid: j.localId, refreshToken: j.refreshToken, isNew: false }; });
     job.then(function (r) {
-      done(); finishLogin(r.name, r.uid, r.refreshToken, r.isNew);
+      // Bring back everything saved to this account (profile, friends, rooms, old messages) before showing the app.
+      saveSession({ uid: r.uid, name: r.name, refreshToken: r.refreshToken });
+      authSubmitBtn.textContent = 'Loading your stuff\u2026';
+      var loggedIn = false;
+      function proceed() { if (loggedIn) return; loggedIn = true; done(); finishLogin(r.name, r.uid, r.refreshToken, r.isNew); }
+      var restoreTimer = setTimeout(proceed, 20000);
+      cloudRestore(r.uid).then(function (reload) {
+        clearTimeout(restoreTimer);
+        if (reload && !loggedIn) { loggedIn = true; lsSet(LS_HAD_ACCOUNT, '1'); lsSet(LS_USERNAME, r.name); try { window.location.reload(); } catch (e) {} return; }
+        proceed();
+      }, function () { clearTimeout(restoreTimer); proceed(); });
       if (r.noRecovery) setTimeout(function () { addNotification('moderation', '\u26A0\uFE0F', 'Your account works, but password reset couldn\u2019t be set up for this username. Ask the owner to delete its old \u201cr\u2026\u201d entry in Firebase.', null); }, 600);
     }, function (err) { done(friendlyAuthError(err && err.code)); });
   });
@@ -11169,6 +11285,11 @@
       if (/USER_DISABLED/.test(c)) forceLogout('This account has been disabled by the owner.');
       else if (/USER_NOT_FOUND|TOKEN_EXPIRED|INVALID_REFRESH_TOKEN/.test(c)) forceLogout('Your account was deleted, or you were signed out. Log in or create an account.');
     });
+  })();
+  // Already logged in on this device: pick up anything saved to the account from another device.
+  (function () {
+    var s = mySession(); if (!s || !username) return;
+    cloudRestore(s.uid).then(function (reload) { if (reload) { lsSet(LS_USERNAME, s.name || username); try { window.location.reload(); } catch (e) {} } }, function () {});
   })();
   // ---------- Password reset with birthday + two questions ----------
   // There's no server code of our own, so the answers ARE the password to a hidden "recovery"
