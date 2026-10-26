@@ -11484,9 +11484,10 @@
     gifPickerStatus.textContent = 'Loading\u2026';
     gifPickerGrid.innerHTML = '';
     var gifKey = getGifKey();
-    refreshGifKeyBox(!gifKey);
-    if (!gifKey) { gifPickerStatus.textContent = 'GIF search needs a free GIPHY key (see below). You can paste a GIF link right now, though.'; return; }
-    var endpoint = query
+    refreshGifKeyBox(false);
+    var endpoint = !gifKey
+      ? '/api/public/gifs?q=' + encodeURIComponent(query || '')
+      : query
       ? 'https://api.giphy.com/v1/gifs/search?api_key=' + encodeURIComponent(gifKey) + '&q=' + encodeURIComponent(query) + '&limit=24&rating=pg-13'
       : 'https://api.giphy.com/v1/gifs/trending?api_key=' + encodeURIComponent(gifKey) + '&limit=24&rating=pg-13';
     fetch(endpoint).then(function (r) {
