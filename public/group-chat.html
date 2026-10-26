@@ -1874,13 +1874,17 @@
     width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; max-height: 80vh;
   }
   .gif-picker-header { display: flex; align-items: center; gap: 10px; }
-  .gif-picker-header input[type="text"] { flex: 1; margin: 0; }
+  .gif-picker-header input[type="text"] { flex: 1; margin: 0; font-size: 16px; }
+  .gif-picker-sheet input[type="text"] { font-size: 16px; }
+  .gif-picker-sheet { max-height: 85dvh; padding-bottom: max(20px, env(safe-area-inset-bottom)); box-sizing: border-box; overflow: hidden; }
   .gif-picker-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; overflow-y: auto; min-height: 200px; max-height: 55vh;
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 96px; gap: 6px;
+    overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; min-height: 200px; max-height: 55dvh; flex: 1 1 auto;
   }
+  @media (max-width: 420px) { .gif-picker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 110px; } }
   .gif-picker-item {
     border: none; padding: 0; border-radius: 10px; overflow: hidden; cursor: pointer; background: var(--surface-alt);
-    aspect-ratio: 1.4; display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%; min-width: 0; display: block; touch-action: manipulation;
   }
   .gif-picker-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .gif-picker-status { text-align: center; font-size: 12.5px; color: var(--muted); margin: 4px 0; min-height: 16px; }
@@ -11480,7 +11484,9 @@
     });
   }
 
+  var gifRequestSeq = 0;
   function fetchGifs(query) {
+    var seq = ++gifRequestSeq;
     gifPickerStatus.textContent = 'Loading\u2026';
     gifPickerGrid.innerHTML = '';
     refreshGifKeyBox(false);
@@ -11490,6 +11496,7 @@
       if (!r.ok) throw new Error('GIPHY responded with status ' + r.status);
       return r.json();
     }).then(function (data) {
+      if (seq !== gifRequestSeq) return; // a newer search replaced this one
       if (data && data.meta && data.meta.status && data.meta.status !== 200) {
         gifPickerStatus.textContent = 'GIPHY error: ' + (data.meta.msg || data.meta.status);
         return;
@@ -11500,11 +11507,12 @@
       renderGifResults(results.map(function (item) {
         return {
           title: item.title,
-          previewUrl: (item.images && item.images.fixed_width_small && item.images.fixed_width_small.url) || (item.images && item.images.preview_gif && item.images.preview_gif.url) || '',
+          previewUrl: (item.images && item.images.fixed_width && item.images.fixed_width.url) || (item.images && item.images.preview_gif && item.images.preview_gif.url) || '',
           fullUrl: (item.images && item.images.original && item.images.original.url) || (item.images && item.images.fixed_height && item.images.fixed_height.url) || ''
         };
       }).filter(function (g) { return g.previewUrl && g.fullUrl; }));
     }).catch(function (err) {
+      if (seq !== gifRequestSeq) return;
       // Shown as the actual error rather than a generic message on purpose —
       // "TypeError: Failed to fetch" specifically points at a network/CORS-
       // level block (very plausible if this file is opened directly as
@@ -12846,8 +12854,10 @@
 
   gifBtn.addEventListener('click', function () {
     gifPickerBackdrop.classList.remove('hidden');
-    fetchGifs(''); // trending by default — this is the "pre-curated funny ones" without hardcoding specific, unknown-license images
-    gifSearchInput.focus();
+    gifSearchInput.value = '';
+    fetchGifs(''); // trending by default
+    // Don't auto-focus on phones: it pops the keyboard and zooms the page.
+    if (!window.matchMedia || !window.matchMedia('(pointer: coarse)').matches) gifSearchInput.focus();
   });
   gifPickerCloseBtn.addEventListener('click', function () { gifPickerBackdrop.classList.add('hidden'); });
   gifPickerBackdrop.addEventListener('click', function (e) { if (e.target === gifPickerBackdrop) gifPickerBackdrop.classList.add('hidden'); });
