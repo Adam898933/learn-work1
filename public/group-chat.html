@@ -11483,15 +11483,10 @@
   function fetchGifs(query) {
     gifPickerStatus.textContent = 'Loading\u2026';
     gifPickerGrid.innerHTML = '';
-    var gifKey = getGifKey();
     refreshGifKeyBox(false);
-    var endpoint = !gifKey
-      ? '/api/public/gifs?q=' + encodeURIComponent(query || '')
-      : query
-      ? 'https://api.giphy.com/v1/gifs/search?api_key=' + encodeURIComponent(gifKey) + '&q=' + encodeURIComponent(query) + '&limit=24&rating=pg-13'
-      : 'https://api.giphy.com/v1/gifs/trending?api_key=' + encodeURIComponent(gifKey) + '&limit=24&rating=pg-13';
+    // Always go through the site's own GIF service (old saved keys were dead and blocked search).
+    var endpoint = '/api/public/gifs?q=' + encodeURIComponent(query || '');
     fetch(endpoint).then(function (r) {
-      if (r.status === 401 || r.status === 403) { refreshGifKeyBox(true); throw new Error('GIPHY rejected that key (' + r.status + '). Check it below'); }
       if (!r.ok) throw new Error('GIPHY responded with status ' + r.status);
       return r.json();
     }).then(function (data) {
