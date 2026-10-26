@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiPublicAccountDataRouteImport } from './routes/api/public/account-data'
+import { Route as ApiPublicGifsRouteImport } from './routes/api/public/gifs'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const ApiPublicAccountDataRoute = ApiPublicAccountDataRouteImport.update({
   path: '/api/public/account-data',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicGifsRoute = ApiPublicGifsRouteImport.update({
+  id: '/api/public/gifs',
+  path: '/api/public/gifs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/public/account-data': typeof ApiPublicAccountDataRoute
+  '/api/public/gifs': typeof ApiPublicGifsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/public/account-data': typeof ApiPublicAccountDataRoute
+  '/api/public/gifs': typeof ApiPublicGifsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/public/account-data': typeof ApiPublicAccountDataRoute
+  '/api/public/gifs': typeof ApiPublicGifsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/account-data'
+  fullPaths: '/' | '/api/public/account-data' | '/api/public/gifs'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/account-data'
-  id: '__root__' | '/' | '/api/public/account-data'
+  to: '/' | '/api/public/account-data' | '/api/public/gifs'
+  id: '__root__' | '/' | '/api/public/account-data' | '/api/public/gifs'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiPublicAccountDataRoute: typeof ApiPublicAccountDataRoute
+  ApiPublicGifsRoute: typeof ApiPublicGifsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicAccountDataRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/gifs': {
+      id: '/api/public/gifs'
+      path: '/api/public/gifs'
+      fullPath: '/api/public/gifs'
+      preLoaderRoute: typeof ApiPublicGifsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiPublicAccountDataRoute: ApiPublicAccountDataRoute,
+  ApiPublicGifsRoute: ApiPublicGifsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
