@@ -5,7 +5,7 @@ export const Route = createFileRoute("/api/public/gifs")({
   server: {
     handlers: {
       GET: async ({ request }) => {
-        const key = process.env.GIPHY_API_KEY;
+        const key = process.env["GIPHY_API_KEY"];
         if (!key) return Response.json({ error: "not_configured" }, { status: 503 });
         const q = (new URL(request.url).searchParams.get("q") || "").slice(0, 100).trim();
         const url = q
