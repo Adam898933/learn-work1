@@ -1,4 +1,5 @@
 # Learning Hub website
+- [ ] Fix blank GIF previews and check Chromebook-specific image blocking.
 - [x] Rename the site Learning Hub and improve login/create account appearance.
 - [x] Remove recovery questions and password reset while preserving existing login and cloud-save logic.
 - [x] Show and verify an educational opening screen requiring a page reload to enter.
