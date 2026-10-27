@@ -1,4 +1,6 @@
 # Learning Hub website
+- [x] Add GIF preview fallback and verify blank/search results and failed-image recovery in Chromium.
+- [ ] Verify Chromebook-specific GIF blocking (blocked: affected device/network unavailable).
 - [x] Rename the site Learning Hub and improve login/create account appearance.
 - [x] Remove recovery questions and password reset while preserving existing login and cloud-save logic.
 - [x] Show and verify an educational opening screen requiring a page reload to enter.

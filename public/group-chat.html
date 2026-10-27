@@ -11468,19 +11468,58 @@
   function getGifKey() { return (lsGet(LS_GIF_KEY) || '').trim() || (lsGet(LS_GIF_KEY_SHARED) || '').trim(); }
   var gifSearchDebounceTimer = null;
 
+  function gifImageUrls(item) {
+    var images = item.images || {};
+    var urls = ['fixed_width', 'fixed_height', 'preview_gif', 'original'].map(function (size) {
+      return images[size] && images[size].url;
+    }).filter(function (url) { return typeof url === 'string' && /^https:\/\//.test(url); });
+    if (/^[A-Za-z0-9]+$/.test(item.id || '')) {
+      urls.push('https://media.giphy.com/media/' + item.id + '/200w.gif');
+      urls.push('https://i.giphy.com/' + item.id + '.gif');
+    }
+    return urls.filter(function (url, index) { return urls.indexOf(url) === index; });
+  }
+
   function renderGifResults(gifs) {
     gifPickerGrid.innerHTML = '';
     gifs.forEach(function (g) {
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'gif-picker-item';
+      btn.disabled = true;
+      btn.setAttribute('aria-label', g.title || 'Send GIF');
+      btn.setAttribute('aria-busy', 'true');
       var img = document.createElement('img');
-      img.src = g.previewUrl;
-      img.alt = g.title || 'GIF';
-      img.loading = 'lazy';
+      img.alt = '';
+      img.loading = 'eager';
+      img.decoding = 'async';
+      img.referrerPolicy = 'no-referrer';
+      img.style.visibility = 'hidden';
+      var nextUrl = 0;
+      var timer;
+      function tryImage() {
+        clearTimeout(timer);
+        if (!btn.isConnected) return;
+        if (nextUrl >= g.previewUrls.length) {
+          btn.remove();
+          if (!gifPickerGrid.children.length) gifPickerStatus.textContent = 'GIF previews could not load. Try searching again.';
+          return;
+        }
+        img.src = g.previewUrls[nextUrl++];
+        timer = setTimeout(tryImage, 8000);
+      }
+      img.onload = function () {
+        clearTimeout(timer);
+        if (!img.naturalWidth) { tryImage(); return; }
+        img.style.visibility = '';
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+      };
+      img.onerror = tryImage;
       btn.appendChild(img);
       btn.addEventListener('click', function () { sendGifMessage(g.fullUrl); });
       gifPickerGrid.appendChild(btn);
+      tryImage();
     });
   }
 
@@ -11507,10 +11546,10 @@
       renderGifResults(results.map(function (item) {
         return {
           title: item.title,
-          previewUrl: (item.images && item.images.fixed_width && item.images.fixed_width.url) || (item.images && item.images.preview_gif && item.images.preview_gif.url) || '',
+          previewUrls: gifImageUrls(item),
           fullUrl: (item.images && item.images.original && item.images.original.url) || (item.images && item.images.fixed_height && item.images.fixed_height.url) || ''
         };
-      }).filter(function (g) { return g.previewUrl && g.fullUrl; }));
+      }).filter(function (g) { return g.previewUrls.length && g.fullUrl; }));
     }).catch(function (err) {
       if (seq !== gifRequestSeq) return;
       // Shown as the actual error rather than a generic message on purpose —
