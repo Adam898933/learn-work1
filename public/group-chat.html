@@ -7915,9 +7915,14 @@
       if (entry.image) {
         var img = document.createElement('img');
         img.className = 'msg-image';
-        img.src = entry.image;
-        img.alt = 'Photo';
+        img.alt = entry.isGif ? 'GIF' : 'Photo';
         img.loading = 'lazy';
+        var imgUrls = sentImageUrls(entry.image), imgIdx = 0;
+        if (imgUrls.length > 1) {
+          img.referrerPolicy = 'no-referrer';
+          img.onerror = function () { if (++imgIdx < imgUrls.length) img.src = imgUrls[imgIdx]; };
+        }
+        img.src = imgUrls[0];
         bubble.appendChild(img);
       }
 
