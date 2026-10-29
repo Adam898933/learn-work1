@@ -40,11 +40,20 @@ describe('GIF image recovery', () => {
     grid.remove();
   });
 
-  it('includes alternate image hosts for valid GIPHY IDs', () => {
+  it('includes alternate image hosts and the site relay for valid GIPHY IDs', () => {
     const { api, grid } = loadPicker();
     expect(api.gifImageUrls({ id: 'abc123', images: {} })).toEqual([
       'https://media.giphy.com/media/abc123/200w.gif', 'https://i.giphy.com/abc123.gif',
+      '/api/public/gif-image?id=abc123&f=200w.gif',
     ]);
+    grid.remove();
+  });
+
+  it('keeps earlier GIFs when more are loaded', () => {
+    const { api, grid } = loadPicker();
+    api.renderGifResults([{ previewUrls: ['https://example.test/a.gif'], fullUrl: 'https://example.test/a.gif' }]);
+    api.renderGifResults([{ previewUrls: ['https://example.test/b.gif'], fullUrl: 'https://example.test/b.gif' }], true);
+    expect(grid.children.length).toBe(2);
     grid.remove();
   });
 });

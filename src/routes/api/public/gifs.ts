@@ -7,11 +7,14 @@ export const Route = createFileRoute("/api/public/gifs")({
       GET: async ({ request }) => {
         const key = process.env["GIPHY_API_KEY"];
         if (!key) return Response.json({ error: "not_configured" }, { status: 503 });
-        const q = (new URL(request.url).searchParams.get("q") || "").slice(0, 100).trim();
+        const params = new URL(request.url).searchParams;
+        const q = (params.get("q") || "").slice(0, 100).trim();
+        const offset = Math.min(Math.max(parseInt(params.get("offset") || "0", 10) || 0, 0), 4900);
         const k = encodeURIComponent(key);
+        const page = `limit=30&offset=${offset}&rating=pg-13`;
         const search = (term: string) =>
-          `https://api.giphy.com/v1/gifs/search?api_key=${k}&q=${encodeURIComponent(term)}&limit=30&rating=pg-13`;
-        let r = await fetch(q ? search(q) : `https://api.giphy.com/v1/gifs/trending?api_key=${k}&limit=30&rating=pg-13`);
+          `https://api.giphy.com/v1/gifs/search?api_key=${k}&q=${encodeURIComponent(term)}&${page}`;
+        let r = await fetch(q ? search(q) : `https://api.giphy.com/v1/gifs/trending?api_key=${k}&${page}`);
         let body = await r.text();
         // Blank picker should never be empty: fall back to a popular search.
         const empty = () => { try { return !(JSON.parse(body).data || []).length; } catch { return true; } };

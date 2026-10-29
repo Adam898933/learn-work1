@@ -1888,6 +1888,7 @@
   }
   .gif-picker-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .gif-picker-status { text-align: center; font-size: 12.5px; color: var(--muted); margin: 4px 0; min-height: 16px; }
+  .gif-load-more { align-self: center; font-weight: 700; }
   .gif-picker-attribution { text-align: center; font-size: 11px; color: var(--muted); margin: 0; }
   .gif-composer-btn { font-size: 10.5px; font-weight: 800; letter-spacing: 0.02em; }
 
@@ -3121,6 +3122,7 @@
         <button type="button" class="text-btn" id="gifPickerCloseBtn">Close</button>
       </div>
       <div class="gif-picker-grid" id="gifPickerGrid"></div>
+      <button type="button" class="text-btn gif-load-more hidden" id="gifLoadMoreBtn">Load more GIFs</button>
       <p class="gif-picker-status" id="gifPickerStatus"></p>
       <div class="gif-key-box hidden" id="gifKeyBox">
         <p class="gif-key-help">GIPHY shut off the shared key this app used. Get a free one: developers.giphy.com → Create an App → API, then paste it here. An admin or owner can share it with everyone.</p>
@@ -11476,12 +11478,15 @@
     if (/^[A-Za-z0-9]+$/.test(item.id || '')) {
       urls.push('https://media.giphy.com/media/' + item.id + '/200w.gif');
       urls.push('https://i.giphy.com/' + item.id + '.gif');
+      // Last resort: load it through the site itself, for networks (e.g. school Chromebooks)
+      // that block GIPHY's image servers.
+      urls.push('/api/public/gif-image?id=' + item.id + '&f=200w.gif');
     }
     return urls.filter(function (url, index) { return urls.indexOf(url) === index; });
   }
 
-  function renderGifResults(gifs) {
-    gifPickerGrid.innerHTML = '';
+  function renderGifResults(gifs, append) {
+    if (!append) gifPickerGrid.innerHTML = '';
     gifs.forEach(function (g) {
       var btn = document.createElement('button');
       btn.type = 'button';
@@ -11506,7 +11511,7 @@
           return;
         }
         img.src = g.previewUrls[nextUrl++];
-        timer = setTimeout(tryImage, 8000);
+        timer = setTimeout(tryImage, 6000);
       }
       img.onload = function () {
         clearTimeout(timer);
@@ -11524,24 +11529,49 @@
   }
 
   var gifRequestSeq = 0;
-  function fetchGifs(query) {
-    var seq = ++gifRequestSeq;
-    gifPickerStatus.textContent = 'Loading\u2026';
-    gifPickerGrid.innerHTML = '';
-    refreshGifKeyBox(false);
+  var gifQuery = '', gifOffset = 0, gifHasMore = false, gifLoadingMore = false;
+  var gifLoadMoreBtn = document.getElementById('gifLoadMoreBtn');
+  function updateGifLoadMore() {
+    if (!gifLoadMoreBtn) return;
+    gifLoadMoreBtn.classList.toggle('hidden', !gifHasMore);
+    gifLoadMoreBtn.disabled = gifLoadingMore;
+    gifLoadMoreBtn.textContent = gifLoadingMore ? 'Loading\u2026' : 'Load more GIFs';
+  }
+  function fetchGifs(query, more) {
+    if (more && (gifLoadingMore || !gifHasMore)) return;
+    var seq = more ? gifRequestSeq : ++gifRequestSeq;
+    if (!more) {
+      gifQuery = query || '';
+      gifOffset = 0;
+      gifHasMore = false;
+      gifPickerStatus.textContent = 'Loading\u2026';
+      gifPickerGrid.innerHTML = '';
+      refreshGifKeyBox(false);
+    }
+    gifLoadingMore = !!more;
+    updateGifLoadMore();
     // Always go through the site's own GIF service (old saved keys were dead and blocked search).
-    var endpoint = '/api/public/gifs?q=' + encodeURIComponent(query || '');
+    var endpoint = '/api/public/gifs?q=' + encodeURIComponent(gifQuery) + '&offset=' + gifOffset;
     fetch(endpoint).then(function (r) {
       if (!r.ok) throw new Error('GIPHY responded with status ' + r.status);
       return r.json();
     }).then(function (data) {
       if (seq !== gifRequestSeq) return; // a newer search replaced this one
+      gifLoadingMore = false;
       if (data && data.meta && data.meta.status && data.meta.status !== 200) {
         gifPickerStatus.textContent = 'GIPHY error: ' + (data.meta.msg || data.meta.status);
+        updateGifLoadMore();
         return;
       }
       var results = (data && data.data) || [];
-      if (!results.length) { gifPickerStatus.textContent = 'No GIFs found — try a different search'; return; }
+      gifOffset += results.length;
+      var total = data && data.pagination && data.pagination.total_count;
+      gifHasMore = results.length > 0 && (typeof total !== 'number' || gifOffset < total) && gifOffset < 4900;
+      updateGifLoadMore();
+      if (!results.length) {
+        if (!more) gifPickerStatus.textContent = 'No GIFs found — try a different search';
+        return;
+      }
       gifPickerStatus.textContent = '';
       renderGifResults(results.map(function (item) {
         return {
@@ -11549,19 +11579,19 @@
           previewUrls: gifImageUrls(item),
           fullUrl: (item.images && item.images.original && item.images.original.url) || (item.images && item.images.fixed_height && item.images.fixed_height.url) || ''
         };
-      }).filter(function (g) { return g.previewUrls.length && g.fullUrl; }));
+      }).filter(function (g) { return g.previewUrls.length && g.fullUrl; }), !!more);
     }).catch(function (err) {
       if (seq !== gifRequestSeq) return;
-      // Shown as the actual error rather than a generic message on purpose —
-      // "TypeError: Failed to fetch" specifically points at a network/CORS-
-      // level block (very plausible if this file is opened directly as
-      // file:// rather than served over http/https, since some APIs refuse
-      // the resulting "null" origin even with an otherwise open policy)
-      // rather than GIPHY itself being down, and a real status code here
-      // means something different again (a dead or rate-limited key).
-      gifPickerStatus.textContent = 'Couldn\u2019t load GIFs: ' + (err && err.message ? err.message : 'unknown error') + '. If this keeps happening, it may mean GIF search doesn\u2019t work when this file is opened directly (file://) rather than hosted \u2014 try opening it via a local server or hosted URL instead.';
+      gifLoadingMore = false;
+      updateGifLoadMore();
+      gifPickerStatus.textContent = 'Couldn\u2019t load GIFs: ' + (err && err.message ? err.message : 'unknown error') + '. Check your connection and try again.';
     });
   }
+  if (gifLoadMoreBtn) gifLoadMoreBtn.addEventListener('click', function () { fetchGifs(gifQuery, true); });
+  // Keep loading as you scroll to the bottom of the GIFs.
+  gifPickerGrid.addEventListener('scroll', function () {
+    if (gifPickerGrid.scrollTop + gifPickerGrid.clientHeight >= gifPickerGrid.scrollHeight - 120) fetchGifs(gifQuery, true);
+  }, { passive: true });
 
   function sendGifMessage(gifUrl) {
     if (isInCooldown()) return;
