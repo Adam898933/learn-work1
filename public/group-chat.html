@@ -11475,6 +11475,14 @@
   function getGifKey() { return (lsGet(LS_GIF_KEY) || '').trim() || (lsGet(LS_GIF_KEY_SHARED) || '').trim(); }
   var gifSearchDebounceTimer = null;
 
+  // Keep GIPHY images on our origin in messages too, including restored history.
+  function sentImageUrls(url) {
+    var match = String(url || '').match(/^https:\/\/(?:media\d*|i)\.giphy\.com\/(?:media\/)?([A-Za-z0-9]{4,64})(?:\/|\.gif(?:[?#]|$))/i);
+    if (!match) return [url];
+    return ['/api/public/gif-image?id=' + match[1] + '&f=200w.gif',
+      '/api/public/gif-image?id=' + match[1] + '&f=giphy.gif', url];
+  }
+
   function gifImageUrls(item) {
     var images = item.images || {};
     var urls = ['fixed_width', 'fixed_height', 'preview_gif', 'original'].map(function (size) {
@@ -11605,7 +11613,7 @@
     var msgId = generateMessageId();
     var delivered = currentRoomOccupancy > 1;
     startMessageCooldown();
-    sendChatMessageOptimistic(currentChannel, { type: 'chat', id: msgId, sender: clientId, username: username, avatar: myAvatar, text: '', image: gifUrl, isGif: true, time: Date.now(), delivered: delivered });
+    sendChatMessageOptimistic(currentChannel, { type: 'chat', id: msgId, sender: clientId, username: username, avatar: myAvatar, text: '', image: sentImageUrls(gifUrl)[0], isGif: true, time: Date.now(), delivered: delivered });
   }
 
   // ---------- @mention autocomplete ----------
@@ -11741,7 +11749,7 @@
     if (isInCooldown()) return;
     gifPickerBackdrop.classList.add('hidden');
     startMessageCooldown();
-    sendChatMessageOptimistic(currentChannel, { type: 'chat', id: generateMessageId(), sender: clientId, username: username, avatar: myAvatar, text: '', image: url, isGif: true, time: Date.now(), delivered: currentRoomOccupancy > 1 });
+    sendChatMessageOptimistic(currentChannel, { type: 'chat', id: generateMessageId(), sender: clientId, username: username, avatar: myAvatar, text: '', image: sentImageUrls(url)[0], isGif: true, time: Date.now(), delivered: currentRoomOccupancy > 1 });
   }
   gifLinkSendBtn.addEventListener('click', function () {
     var url = gifLinkFrom(gifLinkInput.value);

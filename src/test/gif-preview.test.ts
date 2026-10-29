@@ -4,17 +4,31 @@ import { describe, expect, it, vi } from 'vitest';
 
 function loadPicker() {
   const html = readFileSync('public/group-chat.html', 'utf8');
-  const start = html.indexOf('  function gifImageUrls(item)');
+  const start = html.indexOf('  function sentImageUrls(url)');
   const end = html.indexOf('  var gifRequestSeq', start);
   const grid = document.createElement('div');
   document.body.appendChild(grid);
   const send = vi.fn();
   const context = { document, gifPickerGrid: grid, gifPickerStatus: document.createElement('p'), sendGifMessage: send, setTimeout, clearTimeout };
-  const api = runInNewContext(html.slice(start, end) + '\n({gifImageUrls,renderGifResults})', context);
+  const api = runInNewContext(html.slice(start, end) + '\n({sentImageUrls,gifImageUrls,renderGifResults})', context);
   return { api, grid, send };
 }
 
 describe('GIF image recovery', () => {
+  it('relays sent and historical GIPHY images while leaving photos and other hosts alone', () => {
+    const { api, grid } = loadPicker();
+    for (const url of ['https://media2.giphy.com/media/abc123/giphy.gif?cid=test', 'https://i.giphy.com/abc123.gif']) {
+      expect(api.sentImageUrls(url)).toEqual([
+        '/api/public/gif-image?id=abc123&f=200w.gif',
+        '/api/public/gif-image?id=abc123&f=giphy.gif', url,
+      ]);
+    }
+    for (const url of ['data:image/png;base64,abc', 'https://example.test/photo.jpg', 'https://media.giphy.com.evil.test/media/abc123/giphy.gif']) {
+      expect(api.sentImageUrls(url)).toEqual([url]);
+    }
+    grid.remove();
+  });
+
   it('tries another image when the preview fails and only allows loaded images to send', () => {
     const { api, grid, send } = loadPicker();
     api.renderGifResults([{ title: 'Cat', previewUrls: ['https://example.test/broken.gif', 'https://example.test/working.gif'], fullUrl: 'https://example.test/full.gif' }]);
