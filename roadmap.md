@@ -1,4 +1,5 @@
 # Learning Hub website
+- [x] Relay sent GIFs and historical GIF images through the site, and test recovery without direct GIPHY access.
 - [x] Add GIF preview fallback and verify blank/search results and failed-image recovery in Chromium.
 - [ ] Verify Chromebook-specific GIF blocking (blocked: affected device/network unavailable).
 - [x] Rename the site Learning Hub and improve login/create account appearance.
