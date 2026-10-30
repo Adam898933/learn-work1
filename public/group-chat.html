@@ -11477,10 +11477,14 @@
 
   // Keep GIPHY images on our origin in messages too, including restored history.
   function sentImageUrls(url) {
-    var match = String(url || '').match(/^https:\/\/(?:media\d*|i)\.giphy\.com\/(?:media\/)?([A-Za-z0-9]{4,64})(?:\/|\.gif(?:[?#]|$))/i);
+    url = String(url || '');
+    // GIPHY links may carry a "v1.<token>/" segment before the ID.
+    var match = url.match(/^https:\/\/(?:media\d*|i)\.giphy\.com\/(?:media\/)?(?:v1\.[A-Za-z0-9_\-=.]+\/)?([A-Za-z0-9]{4,64})(?:\/|\.gif(?:[?#]|$))/i)
+      || url.match(/^\/api\/public\/gif-image\?id=([A-Za-z0-9]{4,64})&/);
     if (!match) return [url];
-    return ['/api/public/gif-image?id=' + match[1] + '&f=200w.gif',
+    var urls = ['/api/public/gif-image?id=' + match[1] + '&f=200w.gif',
       '/api/public/gif-image?id=' + match[1] + '&f=giphy.gif', url];
+    return urls.filter(function (u, i) { return urls.indexOf(u) === i; });
   }
 
   function gifImageUrls(item) {
