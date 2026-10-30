@@ -15,21 +15,29 @@ export const Route = createFileRoute("/api/public/gif-image")({
         if (!/^[A-Za-z0-9]{4,64}$/.test(id) || !FILES.has(file)) {
           return new Response("bad request", { status: 400 });
         }
-        for (const host of ["media.giphy.com", "i.giphy.com", "media1.giphy.com"]) {
+        // Some GIFs have no small rendition. Try another rendition on our origin
+        // rather than sending the browser back to a potentially blocked host.
+        const files = [...new Set([file, "200w.gif", "giphy-downsized.gif", "giphy.gif"])];
+        for (const candidate of files) {
+        for (const host of ["media.giphy.com", "media1.giphy.com"]) {
           try {
-            const r = await fetch(`https://${host}/media/${id}/${file}`);
+            const r = await fetch(`https://${host}/media/${id}/${candidate}`, {
+              signal: AbortSignal.timeout(8000),
+            });
             const type = r.headers.get("content-type") || "";
             if (r.ok && r.body && type.startsWith("image/")) {
               return new Response(r.body, {
                 status: 200,
-                headers: { "content-type": type, "cache-control": "public, max-age=86400" },
+                headers: { "content-type": type, "cache-control": "public, max-age=86400", "x-content-type-options": "nosniff" },
               });
             }
+            await r.body?.cancel();
           } catch {
             // try the next host
           }
         }
-        return new Response("not found", { status: 404 });
+        }
+        return new Response("not found", { status: 404, headers: { "cache-control": "no-store" } });
       },
     },
   },

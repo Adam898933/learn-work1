@@ -11497,7 +11497,7 @@
       urls.push('https://i.giphy.com/' + item.id + '.gif');
       // Last resort: load it through the site itself, for networks (e.g. school Chromebooks)
       // that block GIPHY's image servers.
-      urls.push('/api/public/gif-image?id=' + item.id + '&f=200w.gif');
+      urls.unshift('/api/public/gif-image?id=' + item.id + '&f=200w.gif');
     }
     return urls.filter(function (url, index) { return urls.indexOf(url) === index; });
   }
@@ -11539,7 +11539,8 @@
       };
       img.onerror = tryImage;
       btn.appendChild(img);
-      btn.addEventListener('click', function () { sendGifMessage(g.fullUrl); });
+      // Send the image that actually loaded, not an untested original variant.
+      btn.addEventListener('click', function () { sendGifMessage(img.getAttribute('src') || g.fullUrl); });
       gifPickerGrid.appendChild(btn);
       tryImage();
     });

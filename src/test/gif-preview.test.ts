@@ -50,7 +50,7 @@ describe('GIF image recovery', () => {
     image.dispatchEvent(new Event('load'));
     expect(button.disabled).toBe(false);
     button.click();
-    expect(send).toHaveBeenCalledWith('https://example.test/full.gif');
+    expect(send).toHaveBeenCalledWith('https://example.test/working.gif');
     grid.remove();
   });
 
@@ -65,8 +65,8 @@ describe('GIF image recovery', () => {
   it('includes alternate image hosts and the site relay for valid GIPHY IDs', () => {
     const { api, grid } = loadPicker();
     expect(api.gifImageUrls({ id: 'abc123', images: {} })).toEqual([
-      'https://media.giphy.com/media/abc123/200w.gif', 'https://i.giphy.com/abc123.gif',
       '/api/public/gif-image?id=abc123&f=200w.gif',
+      'https://media.giphy.com/media/abc123/200w.gif', 'https://i.giphy.com/abc123.gif',
     ]);
     grid.remove();
   });

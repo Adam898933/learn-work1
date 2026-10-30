@@ -1,4 +1,5 @@
 # Learning Hub website
+- [x] Fix intermittent sent GIF failures: preserve loaded previews and recover missing renditions; seven tests passed and twelve selections displayed with external GIPHY blocked (real account/device unavailable).
 - [x] Relay sent GIFs and historical GIF images through the site, and test recovery without direct GIPHY access. (verified: tests pass, relay serves real GIFs)
 - [x] Add GIF preview fallback and verify blank/search results and failed-image recovery in Chromium.
 - [ ] Verify Chromebook-specific GIF blocking (blocked: affected device/network unavailable).
