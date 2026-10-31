@@ -1083,6 +1083,9 @@
   .msg-text { font-size: 14px; line-height: 1.35; white-space: pre-wrap; word-break: break-word; }
   .msg-deleted { font-style: italic; color: var(--muted); font-size: 13.5px; padding: 2px 0; }
   .msg-image { display: block; max-width: 100%; border-radius: 10px; margin-bottom: 4px; }
+  .msg-image.msg-gif { width: 420px; max-width: 100%; height: auto; max-height: 480px; object-fit: contain; }
+  .message-row-wrap:has(.msg-gif) { width: 100%; min-width: 0; }
+  .bubble-col:has(.msg-gif) { width: 444px; min-width: 0; }
   .msg-audio { display: block; width: 220px; max-width: 100%; height: 34px; margin-bottom: 2px; }
 
   .msg-link { color: inherit; text-decoration: underline; word-break: break-all; }
@@ -1871,17 +1874,17 @@
   }
   .gif-picker-sheet {
     background: var(--card-bg); border-radius: 18px 18px 0 0; padding: 16px 16px 20px;
-    width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 10px; max-height: 80vh;
+    width: 100%; max-width: 640px; display: flex; flex-direction: column; gap: 10px; max-height: 80vh;
   }
   .gif-picker-header { display: flex; align-items: center; gap: 10px; }
   .gif-picker-header input[type="text"] { flex: 1; margin: 0; font-size: 16px; }
   .gif-picker-sheet input[type="text"] { font-size: 16px; }
   .gif-picker-sheet { max-height: 85dvh; padding-bottom: max(20px, env(safe-area-inset-bottom)); box-sizing: border-box; overflow: hidden; }
   .gif-picker-grid {
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 96px; gap: 6px;
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 160px; gap: 6px;
     overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; min-height: 200px; max-height: 55dvh; flex: 1 1 auto;
   }
-  @media (max-width: 420px) { .gif-picker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 110px; } }
+  @media (max-width: 640px) { .gif-picker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 150px; } }
   .gif-picker-item {
     border: none; padding: 0; border-radius: 10px; overflow: hidden; cursor: pointer; background: var(--surface-alt);
     width: 100%; height: 100%; min-width: 0; display: block; touch-action: manipulation;
@@ -7914,7 +7917,7 @@
 
       if (entry.image) {
         var img = document.createElement('img');
-        img.className = 'msg-image';
+        img.className = entry.isGif ? 'msg-image msg-gif' : 'msg-image';
         img.alt = entry.isGif ? 'GIF' : 'Photo';
         img.loading = 'lazy';
         var imgUrls = sentImageUrls(entry.image), imgIdx = 0;
@@ -11482,8 +11485,11 @@
     var match = url.match(/^https:\/\/(?:media\d*|i)\.giphy\.com\/(?:media\/)?(?:v1\.[A-Za-z0-9_\-=.]+\/)?([A-Za-z0-9]{4,64})(?:\/|\.gif(?:[?#]|$))/i)
       || url.match(/^\/api\/public\/gif-image\?id=([A-Za-z0-9]{4,64})&/);
     if (!match) return [url];
-    var urls = ['/api/public/gif-image?id=' + match[1] + '&f=200w.gif',
+    var urls = ['/api/public/gif-image?id=' + match[1] + '&f=giphy-downsized.gif',
+      '/api/public/gif-image?id=' + match[1] + '&f=200w.gif',
       '/api/public/gif-image?id=' + match[1] + '&f=giphy.gif', url];
+    // Preserve a larger rendition that already loaded in the picker.
+    if (/^\/api\/public\/gif-image\?/.test(url) && !/[?&]f=(?:200w|200|100)\.gif(?:&|$)/.test(url)) urls.unshift(url);
     return urls.filter(function (u, i) { return urls.indexOf(u) === i; });
   }
 
@@ -11497,7 +11503,8 @@
       urls.push('https://i.giphy.com/' + item.id + '.gif');
       // Last resort: load it through the site itself, for networks (e.g. school Chromebooks)
       // that block GIPHY's image servers.
-      urls.unshift('/api/public/gif-image?id=' + item.id + '&f=200w.gif');
+      urls.unshift('/api/public/gif-image?id=' + item.id + '&f=giphy-downsized.gif',
+        '/api/public/gif-image?id=' + item.id + '&f=200w.gif');
     }
     return urls.filter(function (url, index) { return urls.indexOf(url) === index; });
   }
