@@ -1,4 +1,5 @@
 # Learning Hub website
+- [ ] Enlarge GIFs in chats and the picker, retaining relay recovery and checking display sizes.
 - [x] Fix intermittent sent GIF failures: preserve loaded previews and recover missing renditions; seven tests passed and twelve selections displayed with external GIPHY blocked (real account/device unavailable).
 - [x] Relay sent GIFs and historical GIF images through the site, and test recovery without direct GIPHY access. (verified: tests pass, relay serves real GIFs)
 - [x] Add GIF preview fallback and verify blank/search results and failed-image recovery in Chromium.
