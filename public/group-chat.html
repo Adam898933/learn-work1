@@ -1084,6 +1084,8 @@
   .msg-deleted { font-style: italic; color: var(--muted); font-size: 13.5px; padding: 2px 0; }
   .msg-image { display: block; max-width: 100%; border-radius: 10px; margin-bottom: 4px; }
   .msg-image.msg-gif { width: 420px; max-width: 100%; height: auto; max-height: 480px; object-fit: contain; }
+  .message-row-wrap:has(.msg-gif) { width: 100%; }
+  .bubble-col:has(.msg-gif) { width: 444px; }
   .msg-audio { display: block; width: 220px; max-width: 100%; height: 34px; margin-bottom: 2px; }
 
   .msg-link { color: inherit; text-decoration: underline; word-break: break-all; }
